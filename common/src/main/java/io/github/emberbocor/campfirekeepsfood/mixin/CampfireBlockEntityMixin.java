@@ -34,7 +34,7 @@ abstract class CampfireBlockEntityMixin {
             target = "Lnet/minecraft/world/level/Level;sendBlockUpdated(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/world/level/block/state/BlockState;I)V"))
     private static void campfirekeepsfood$keepResult(Level level, BlockPos pos, BlockState state, CampfireBlockEntity blockEntity,
             CallbackInfo ci, boolean changed, int slot, ItemStack ingredient, SingleRecipeInput input, ItemStack result) {
-        if (CookedFood.staysOnCampfire(level, result)) {
+        if (!result.isEmpty()) {
             CookedFood.keep(blockEntity, slot, result);
         }
     }
