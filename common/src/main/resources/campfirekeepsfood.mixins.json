@@ -1,8 +1,13 @@
 {
   "required": true,
+  "minVersion": "0.8",
   "package": "io.github.emberbocor.campfirekeepsfood.mixin",
   "compatibilityLevel": "JAVA_21",
-  "mixins": [],
+  "mixins": [
+    "CampfireBlockEntityAccessor",
+    "CampfireBlockEntityMixin",
+    "CampfireBlockMixin"
+  ],
   "injectors": {
     "defaultRequire": 1
   },

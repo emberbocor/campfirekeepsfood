@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "id": "${mod_id}",
+  "version": "${mod_version}",
+  "name": "${mod_name}",
+  "description": "Cooked food stays on the campfire until a player takes it with an empty hand. Only needed on the server.",
+  "authors": [
+    "Ember Bocor"
+  ],
+  "contact": {
+    "homepage": "https://github.com/emberbocor/campfirekeepsfood",
+    "sources": "https://github.com/emberbocor/campfirekeepsfood",
+    "issues": "https://github.com/emberbocor/campfirekeepsfood/issues"
+  },
+  "license": "${mod_license}",
+  "environment": "*",
+  "mixins": [
+    "${mod_id}.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": "${fabric_loader_version_range}",
+    "minecraft": "${fabric_minecraft_version_range}",
+    "java": ">=21"
+  }
+}
