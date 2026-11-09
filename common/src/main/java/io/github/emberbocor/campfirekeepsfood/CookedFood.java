@@ -3,6 +3,7 @@ package io.github.emberbocor.campfirekeepsfood;
 import io.github.emberbocor.campfirekeepsfood.mixin.CampfireBlockEntityAccessor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
@@ -21,8 +22,8 @@ public final class CookedFood {
     private CookedFood() {
     }
 
-    public static boolean staysOnCampfire(Level level, ItemStack result) {
-        return level.getRecipeManager().getRecipeFor(RecipeType.CAMPFIRE_COOKING, new SingleRecipeInput(result), level).isEmpty();
+    public static boolean staysOnCampfire(ServerLevel level, ItemStack result) {
+        return level.recipeAccess().getRecipeFor(RecipeType.CAMPFIRE_COOKING, new SingleRecipeInput(result), level).isEmpty();
     }
 
     public static boolean isCooked(CampfireBlockEntity blockEntity, ItemStack stack) {
