@@ -6,6 +6,7 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Prediction;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeType;
@@ -43,7 +44,7 @@ public final class CookedFood {
 
         for (int slot = 0; slot < items.size(); slot++) {
             if (cookingTime[slot] == COOKED && !items.get(slot).isEmpty()) {
-                player.getInventory().placeItemBackInInventory(items.set(slot, ItemStack.EMPTY));
+                player.getInventory().placeItemBackInInventory(items.set(slot, ItemStack.EMPTY), Prediction.SERVER_ONLY);
                 cookingTime[slot] = 0;
                 took = true;
             }
