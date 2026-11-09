@@ -38,11 +38,11 @@ What stays vanilla:
 
 | | NeoForge | Forge | Fabric |
 |---|---|---|---|
-| Minecraft | 1.21.11 | 1.21.11 | 1.21.11 |
-| Loader | NeoForge 21.11.42 or newer | Forge 61.0.1 or newer | Fabric Loader 0.17.3 or newer |
-| Jar | `campfirekeepsfood-neoforge-1.21.11-<version>.jar` | `campfirekeepsfood-forge-1.21.11-<version>.jar` | `campfirekeepsfood-fabric-1.21.11-<version>.jar` |
+| Minecraft | 26.1 to 26.1.2 | 26.1 to 26.1.2 | 26.1 to 26.1.2 |
+| Loader | NeoForge 26.1.0.1-beta or newer | Forge 62.0.0 or newer | Fabric Loader 0.18.2 or newer |
+| Jar | `campfirekeepsfood-neoforge-26.1-26.1.2-<version>.jar` | `campfirekeepsfood-forge-26.1-26.1.2-<version>.jar` | `campfirekeepsfood-fabric-26.1-26.1.2-<version>.jar` |
 
-On Minecraft 1.21.11, NeoForge and Forge are separate loaders that do not run each other's mods, so each has its own jar. Pick the jar that matches your server's loader.
+On Minecraft 26.1 to 26.1.2, NeoForge and Forge are separate loaders that do not run each other's mods, so each has its own jar. Pick the jar that matches your server's loader.
 
 The Fabric version does not need Fabric API.
 
