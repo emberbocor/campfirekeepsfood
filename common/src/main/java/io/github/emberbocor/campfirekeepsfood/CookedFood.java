@@ -82,6 +82,15 @@ public final class CookedFood {
         return took;
     }
 
+    /** Called before new food goes in: vanilla code (commands, {@code clearContent}) can empty a slot without resetting its stage. */
+    public static void resetEmptySlots(int[] stages, NonNullList<ItemStack> items) {
+        for (int slot = 0; slot < items.size(); slot++) {
+            if (items.get(slot).isEmpty()) {
+                stages[slot] = 0;
+            }
+        }
+    }
+
     public static void loadStages(int[] stages, CompoundTag tag) {
         int[] saved = tag.getIntArray(STAGES_TAG);
         Arrays.fill(stages, 0);

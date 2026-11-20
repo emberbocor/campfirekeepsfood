@@ -7,6 +7,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import io.github.emberbocor.campfirekeepsfood.CookedFood;
@@ -14,6 +15,7 @@ import io.github.emberbocor.campfirekeepsfood.CookingStages;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.SingleRecipeInput;
 import net.minecraft.world.level.Level;
@@ -51,6 +53,11 @@ abstract class CampfireBlockEntityMixin implements CookingStages {
         } else {
             CookedFood.keep(level, blockEntity, slot, result);
         }
+    }
+
+    @Inject(method = "placeFood", at = @At("HEAD"))
+    private void campfirekeepsfood$resetEmptySlots(LivingEntity entity, ItemStack food, int cookTime, CallbackInfoReturnable<Boolean> cir) {
+        CookedFood.resetEmptySlots(campfirekeepsfood$cookingStages, ((CampfireBlockEntity) (Object) this).getItems());
     }
 
     @Inject(method = "loadAdditional", at = @At("TAIL"))
