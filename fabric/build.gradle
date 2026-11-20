@@ -26,6 +26,10 @@ dependencies {
         parchment("org.parchmentmc.data:parchment-${parchment_minecraft_version}:${parchment_mappings_version}@zip")
     }
     modImplementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
+    implementation "com.electronwill.night-config:core:${night_config_version}"
+    implementation "com.electronwill.night-config:toml:${night_config_version}"
+    include "com.electronwill.night-config:core:${night_config_version}"
+    include "com.electronwill.night-config:toml:${night_config_version}"
 }
 
 loom {
