@@ -1,6 +1,7 @@
 package io.github.emberbocor.campfirekeepsfood.mixin;
 
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
@@ -9,7 +10,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import io.github.emberbocor.campfirekeepsfood.CookedFood;
+import io.github.emberbocor.campfirekeepsfood.CookingStages;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.SingleRecipeInput;
 import net.minecraft.world.level.Level;
@@ -17,7 +21,15 @@ import net.minecraft.world.level.block.entity.CampfireBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
 @Mixin(CampfireBlockEntity.class)
-abstract class CampfireBlockEntityMixin {
+abstract class CampfireBlockEntityMixin implements CookingStages {
+    @Unique
+    private final int[] campfirekeepsfood$cookingStages = new int[4];
+
+    @Override
+    public int[] campfirekeepsfood$getCookingStages() {
+        return campfirekeepsfood$cookingStages;
+    }
+
     @ModifyVariable(method = "cookTick", at = @At("STORE"), ordinal = 0)
     private static ItemStack campfirekeepsfood$skipCookedSlots(ItemStack stack, Level level, BlockPos pos, BlockState state,
             CampfireBlockEntity blockEntity) {
@@ -34,8 +46,20 @@ abstract class CampfireBlockEntityMixin {
             target = "Lnet/minecraft/world/level/Level;sendBlockUpdated(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/world/level/block/state/BlockState;I)V"))
     private static void campfirekeepsfood$keepResult(Level level, BlockPos pos, BlockState state, CampfireBlockEntity blockEntity,
             CallbackInfo ci, boolean changed, int slot, ItemStack ingredient, SingleRecipeInput input, ItemStack result) {
-        if (!result.isEmpty()) {
-            CookedFood.keep(blockEntity, slot, result);
+        if (result.isEmpty()) {
+            CookedFood.thrownOff(blockEntity, slot);
+        } else {
+            CookedFood.keep(level, blockEntity, slot, result);
         }
+    }
+
+    @Inject(method = "loadAdditional", at = @At("TAIL"))
+    private void campfirekeepsfood$loadCookingStages(CompoundTag tag, HolderLookup.Provider registries, CallbackInfo ci) {
+        CookedFood.loadStages(campfirekeepsfood$cookingStages, tag);
+    }
+
+    @Inject(method = "saveAdditional", at = @At("TAIL"))
+    private void campfirekeepsfood$saveCookingStages(CompoundTag tag, HolderLookup.Provider registries, CallbackInfo ci) {
+        CookedFood.saveStages(campfirekeepsfood$cookingStages, tag);
     }
 }
