@@ -1,21 +1,36 @@
 package io.github.emberbocor.campfirekeepsfood.mixin;
 
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import io.github.emberbocor.campfirekeepsfood.CookedFood;
+import io.github.emberbocor.campfirekeepsfood.CookingStages;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.CampfireBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 @Mixin(CampfireBlockEntity.class)
-abstract class CampfireBlockEntityMixin {
+abstract class CampfireBlockEntityMixin implements CookingStages {
     private int campfirekeepsfood$slot;
+    @Unique
+    private final int[] campfirekeepsfood$cookingStages = new int[4];
+
+    @Override
+    public int[] campfirekeepsfood$getCookingStages() {
+        return campfirekeepsfood$cookingStages;
+    }
 
     @ModifyVariable(method = "cookTick", at = @At("STORE"), ordinal = 0)
     private static ItemStack campfirekeepsfood$skipCookedSlots(ItemStack stack, ServerLevel level, BlockPos pos, BlockState state,
@@ -34,9 +49,27 @@ abstract class CampfireBlockEntityMixin {
             target = "Lnet/minecraft/server/level/ServerLevel;sendBlockUpdated(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/world/level/block/state/BlockState;I)V"))
     private static ItemStack campfirekeepsfood$keepResult(ItemStack result, ServerLevel level, BlockPos pos, BlockState state,
             CampfireBlockEntity blockEntity) {
-        if (!result.isEmpty()) {
-            CookedFood.keep(blockEntity, ((CampfireBlockEntityMixin) (Object) blockEntity).campfirekeepsfood$slot, result);
+        int slot = ((CampfireBlockEntityMixin) (Object) blockEntity).campfirekeepsfood$slot;
+        if (result.isEmpty()) {
+            CookedFood.thrownOff(blockEntity, slot);
+        } else {
+            CookedFood.keep(level, blockEntity, slot, result);
         }
         return result;
+    }
+
+    @Inject(method = "placeFood", at = @At("HEAD"))
+    private void campfirekeepsfood$resetEmptySlots(ServerLevel level, LivingEntity entity, ItemStack food, CallbackInfoReturnable<Boolean> cir) {
+        CookedFood.resetEmptySlots(campfirekeepsfood$cookingStages, ((CampfireBlockEntity) (Object) this).getItems());
+    }
+
+    @Inject(method = "loadAdditional", at = @At("TAIL"))
+    private void campfirekeepsfood$loadCookingStages(ValueInput input, CallbackInfo ci) {
+        CookedFood.loadStages(campfirekeepsfood$cookingStages, input);
+    }
+
+    @Inject(method = "saveAdditional", at = @At("TAIL"))
+    private void campfirekeepsfood$saveCookingStages(ValueOutput output, CallbackInfo ci) {
+        CookedFood.saveStages(campfirekeepsfood$cookingStages, output);
     }
 }
