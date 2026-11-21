@@ -14,8 +14,9 @@ Available for NeoForge, Forge and Fabric.
 - **Take it all at once.** Right-click the campfire with an empty main hand to collect every cooked item on it.
 - **Campfires and soul campfires.** Both work the same way.
 - **Saved with the world.** Cooked food on a campfire survives restarts and chunk reloads.
+- **Cooking in stages (optional).** Recipes from mods or datapacks that turn one result into the next can cook on the same campfire, stage after stage, until the final result stays. Off by default, see [Configuration](#configuration).
 
-There is no config file.
+The mod has one small server config file.
 
 ## How it works
 
@@ -25,7 +26,9 @@ There is no config file.
 - **Off hand.** Hands are used in the vanilla order, main hand first. An item in your off hand still does its normal action on the same click, so raw food in your off hand goes onto the campfire right after you took the cooked food.
 - **Sneaking.** As in vanilla, sneaking while holding something in either hand skips the campfire. Sneaking with both hands empty still takes the food.
 - **Slots.** A campfire has four slots and cooked food keeps its slot. New food can only go into an empty slot, so take the cooked food to make room.
-- **Results that can be cooked again.** If another mod or a datapack has a campfire recipe for the result, that result is thrown off the campfire as in vanilla, so you can put it back on.
+- **Results that can be cooked again.** If another mod or a datapack has a campfire recipe for the result, that result is thrown off the campfire as in vanilla, so you can put it back on. This is the default; with `cookInStages = true` it stays and cooks again instead.
+- **Cooking in stages.** With `cookInStages = true`, a result that has a campfire recipe stays in its slot and starts cooking again right away, with the cooking time of its own recipe. This repeats until a result has no campfire recipe or the item reaches `maxStages`; that last result stays as cooked food. A chain that loops back on itself stops the same way.
+- **Taking food between stages.** An empty-hand click also takes results that are cooking their next stage, together with the cooked food. Their cooking progress is lost. Food you put on the campfire yourself is never taken before its first stage is done, as in vanilla.
 
 What stays vanilla:
 
@@ -58,9 +61,32 @@ Players without the mod see the cooked food on the campfire like everyone else. 
 
 In singleplayer, install it in your own game; the built-in server runs it.
 
+## Configuration
+
+### Server: `config/campfirekeepsfood-server.toml`
+
+Created with comments on the first server or world start:
+
+```toml
+# Cook results that still have a campfire recipe again on the same campfire, stage after stage,
+# until a result has no campfire recipe left. False throws such results off, as in vanilla.
+cookInStages = false
+
+# Most cooking stages per item placed on the campfire, counting the first one. Whole number from 1 to 64.
+# The result of the last stage stays on the campfire as cooked food. Only used when cookInStages is true.
+maxStages = 8
+```
+
+- With `cookInStages = false` the mod works exactly as before stages existed, and `maxStages` is ignored.
+- Vanilla Minecraft has no campfire recipe whose result can be cooked again. Stages only matter with mods or datapacks that add such recipes.
+- With `maxStages = 1`, every first result stays as cooked food, even if it has another campfire recipe.
+- The stage of each slot is saved with the campfire, so cooking continues after a restart.
+- Changes take effect after a server restart, or after closing and reopening a singleplayer world.
+- Mistakes do not crash the server. An invalid value uses the default for that setting and is logged as a warning. If the file cannot be read at all (for example a TOML syntax error), all defaults are used, the file is left untouched and the log says why.
+
 ## Removing the mod
 
-The world opens normally. The mod saves nothing of its own: cooked food is stored in the campfire's normal slots. Without the mod, vanilla throws anything off a burning campfire when it finishes "cooking", and items that have no recipe finish right away, so cooked food pops off a lit campfire as soon as the campfire ticks. On an unlit campfire it stays until you light the campfire again or break it.
+The world opens normally. Cooked food is stored in the campfire's normal slots; the mod only adds the stage of each slot to the campfire's data, which vanilla ignores. Without the mod, vanilla throws anything off a burning campfire when it finishes "cooking", and items that have no recipe finish right away, so cooked food pops off a lit campfire as soon as the campfire ticks. On an unlit campfire it stays until you light the campfire again or break it.
 
 ## Compatibility
 
@@ -79,3 +105,5 @@ The jars are written to `neoforge/build/libs/`, `forge/build/libs/` and `fabric/
 ## License
 
 MIT.
+
+The Fabric jar bundles unmodified NightConfig core and toml 3.8.0 under LGPL-3.0, with notice, source links and LGPL/GPL texts in `META-INF/`. NeoForge and Forge use their loader-provided NightConfig libraries.
